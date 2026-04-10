@@ -5,6 +5,8 @@ import { useCart } from "react-use-cart";
 import { X, ShoppingBag, Plus, Minus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "./Button";
+import { createCheckoutAction } from "@/app/actions/checkout";
+import { Loader2 } from "lucide-react";
 
 export function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -17,9 +19,33 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () =
     cartTotal,
   } = useCart();
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleCheckout = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await createCheckoutAction(items);
+      
+      if (result.error) {
+        setError(result.error);
+        setIsLoading(false);
+      } else if (result.url) {
+        // Redirect to Shopify checkout
+        window.location.href = result.url;
+      }
+    } catch (err) {
+      console.error("Checkout failed:", err);
+      setError("Something went wrong. Please try again.");
+      setIsLoading(false);
+    }
+  };
 
   if (!mounted) return null;
 
@@ -135,8 +161,23 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                 <p className="text-xs text-charcoal/50 text-center mb-6">
                   Shipping & taxes calculated at checkout.
                 </p>
-                <Button className="w-full text-lg shadow-xl shadow-charcoal/5" size="lg">
-                  Checkout via Shopify
+                {error && (
+                  <p className="text-sm text-red-500 text-center mb-4 font-medium">{error}</p>
+                )}
+                <Button 
+                  className="w-full text-lg shadow-xl shadow-charcoal/5" 
+                  size="lg"
+                  onClick={handleCheckout}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Redirecting...
+                    </>
+                  ) : (
+                    "Checkout via Shopify"
+                  )}
                 </Button>
               </div>
             )}

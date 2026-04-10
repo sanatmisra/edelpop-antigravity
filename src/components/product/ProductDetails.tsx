@@ -17,8 +17,11 @@ export function ProductDetails({ product, handle, localImages }: { product: any,
   const description = product?.descriptionHtml || "<p>Knusprig, luftig, edel. Der perfekte Snack ohne schlechtes Gewissen.</p>";
 
   const handleAddToCart = () => {
+    // Shopify cartCreate requires a Variant ID (merchandiseId), not a Product ID.
+    const variantId = product?.variants?.edges[0]?.node?.id || product?.id;
+
     addItem({
-      id: product?.id || `fallback_${handle}`,
+      id: variantId || `fallback_${handle}`,
       price: price,
       name: title,
       title: title,

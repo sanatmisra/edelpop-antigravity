@@ -191,3 +191,44 @@ export async function getProduct(handle: string): Promise<any> {
     return null;
   }
 }
+
+const cartCreateMutation = `
+  mutation cartCreate($input: CartInput) {
+    cartCreate(input: $input) {
+      cart {
+        id
+        checkoutUrl
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+export async function createCart(lines: { merchandiseId: string; quantity: number }[]): Promise<string | null> {
+  try {
+    const res = await shopifyFetch<any>({
+      query: cartCreateMutation,
+      variables: {
+        input: {
+          lines
+        }
+      },
+      cache: 'no-store'
+    });
+
+    const cart = res.body?.data?.cartCreate?.cart;
+    if (!cart) {
+      console.error('Failed to create cart:', res.body?.data?.cartCreate?.userErrors);
+      return null;
+    }
+
+    return cart.checkoutUrl;
+  } catch (error) {
+    console.error('Error in createCart:', error);
+    return null;
+  }
+}
+
