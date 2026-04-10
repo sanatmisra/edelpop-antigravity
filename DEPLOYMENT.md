@@ -30,14 +30,15 @@ Once the deployment is finished, Vercel will provide you with a production URL (
 3.  Click **"Checkout via Shopify"**.
 4.  Verify that you are redirected to the secure Shopify checkout page.
 
-## 4. Adding a Custom Domain (e.g., edelpop.de)
-If you already own a domain like `edelpop.de`, follow these steps to connect it:
+## 4. Adding a Custom Domain (via Hostinger)
+If you bought `edelpop.de` via **Hostinger**, follow these specific steps:
 1.  In your Vercel Project, go to **Settings** > **Domains**.
-2.  Enter `edelpop.de` and click **Add**.
-3.  Vercel will give you two DNS records to add at your domain registrar (e.g., GoDaddy, Namecheap, or IONOS):
-    *   An **A Record** pointing to Vercel's IP.
-    *   A **CNAME Record** for `www.edelpop.de`.
-4.  Once added, Vercel will automatically issue a free SSL certificate for you.
+2.  Enter `edelpop.de`, click **Add**, and choose the "Recommended" option to add `www.edelpop.de` as well.
+3.  Log in to your **Hostinger Dashboard**, go to **Domains** > **DNS / Nameservers**.
+4.  Vercel will show you the exact values to use. In Hostinger's **DNS Zone Editor**, add/update these:
+    *   **Type A**: Set Host as `@` and Point to Vercel's IP (usually `76.76.21.21`).
+    *   **Type CNAME**: Set Host as `www` and Point to `cname.vercel-dns.com`.
+5.  Wait for the "Valid" checkmark in Vercel (Hostinger updates are usually very fast).
 
 ---
 
